@@ -33,6 +33,9 @@ urlpatterns = [
     # Get, update, or delete a specific project
     path('projects/<int:pk>/', ProjectDetailAPIView.as_view(), name='project-detail'),
 
+    # LACKING: NEEDS URL FOR projects/<int:pk>/users so I can tag the users on that project -> A mistake on my part. 
+
+    
     # Get all time entries for a specific user or create a new time entry
     path('time-entries/', TimeEntryListAPIView.as_view(), name='time-entry-list'),
 

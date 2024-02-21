@@ -2,11 +2,14 @@ import './App.css';
 import React from 'react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import Container from 'react-bootstrap/Container';
-import Navbar from 'react-bootstrap/Navbar';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Navbar, Container, Button, Row, Col, Card, Form } from 'react-bootstrap';
+import CreateProject from './components/CreateProject';
+import CreateTask from './components/CreateTask';
+/* TagUser component is currently WIP */
+/* import TagUser from './components/TagUser'; */
+import DeleteProject from './components/DeleteProject';
+import DeleteTask from './components/DeleteTask';
 
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
@@ -20,6 +23,7 @@ const client = axios.create({
 function App() {
 
   const [currentUser, setCurrentUser] = useState();
+  const [userData, setUserData] = useState(null);
   const [registrationToggle, setRegistrationToggle] = useState(false);
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -29,6 +33,8 @@ function App() {
     client.get("/user/")
     .then(function(res) {
       setCurrentUser(true);
+      // response has a user object
+      setUserData(res.data.user); 
     })
     .catch(function(error) {
       setCurrentUser(false);
@@ -100,18 +106,63 @@ function App() {
             <Navbar.Brand>Time-Tracker App</Navbar.Brand>
             <Navbar.Toggle />
             <Navbar.Collapse className="justify-content-end">
+              <Navbar.Text className="custom-nav-text">
+                Signed in as: <strong>{userData.username}</strong>
+              </Navbar.Text>
               <Navbar.Text>
-                <form onSubmit={e => submitLogout(e)}>
+                <Form onSubmit={e => submitLogout(e)}>
                   <Button type="submit" variant="light">Log out</Button>
-                </form>
+                </Form>
               </Navbar.Text>
             </Navbar.Collapse>
           </Container>
         </Navbar>
-          <div className="center">
-            <h2>You're logged in!</h2>
-          </div>
+        {userData && (
+          <div>
+            <Container className="mt-4">
+              <div className="text-center">
+                <h2 style={{ marginBottom: '20px' }}>Welcome, {userData.username}!</h2>
+                <Card style={{ width: '400px', margin: '0 auto', padding: '20px' }}>
+                  <Card.Body>
+                    <Card.Title>Your Profile</Card.Title>
+                    <Card.Text>
+                      <p><strong>Username:</strong> {userData.username}</p>
+                      <p><strong>Email:</strong> {userData.email}</p>
+                    </Card.Text>
+                    {/* Edit Profile button for next version */}
+                    {/* <Button variant="primary">Edit Profile</Button> */}
+                  </Card.Body>
+                </Card>
+              </div>
+            </Container>
+            <Container className="mt-5">
+              <Row>
+                <Col md={4}>
+                  <CreateProject />
+                </Col>
+                <Col md={4}>
+                  <CreateTask />
+                </Col>
+                <Col md={4}>
+                  {/* WIP */}
+                  {/* <TagUser /> */}
+                </Col>
+              </Row>
+              <Row>
+                <Col md={4}>
+                  {/* I NEED TO EDIT THIS SUCH THAT IT handles projectID for dynamic purposes */}
+                  <DeleteProject projectId={1} />
+                </Col>
+                <Col md={4}>
+                  {/* I NEED TO EDIT THIS SUCH THAT IT handles TaskId for dynamic purposes */}
+                  <DeleteTask taskId={1} />
+                </Col>
+              </Row>
+            </Container>
+
         </div>
+        )}
+      </div>
     );
   }
   return (

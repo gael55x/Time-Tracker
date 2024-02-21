@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  time_tracker_project:
+    volumes:
+      - static:/static
+    build:
+      context: ./time_tracker_project
+    ports:
+      - "8000:8000"
+    # command: python manage.py runserver 127.0.0.1:8000
+
+  frontend:
+    build:
+      context: ./frontend
+    volumes:
+      - frontend:/app/build
+    command: npm start 
+
+volumes:
+  static:
+  frontend:

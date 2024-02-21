@@ -5,7 +5,10 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 
 
 class AppUserManager(BaseUserManager):
+    """Manager for custom user model."""
+
     def create_user(self, email, password=None):
+        """Create and return a new user with an email and password."""
         if not email:
             raise ValueError('An email is required.')
         if not password:
@@ -17,6 +20,7 @@ class AppUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, password=None):
+        """Create and return a new superuser with an email and password."""
         if not email:
             raise ValueError('An email is required.')
         if not password:
@@ -28,6 +32,7 @@ class AppUserManager(BaseUserManager):
         return user
 
 class AppUser(AbstractBaseUser, PermissionsMixin):
+    """Custom user model."""
     email = models.EmailField(max_length=50, unique=True)
     username = models.CharField(max_length=50)
     is_active = models.BooleanField(default=True)
@@ -57,9 +62,13 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 
 
 class Project(models.Model):
+    """Project model."""
+
     name = models.CharField(max_length=255)
 
 class TimeEntry(models.Model):
+    """Time entry model."""
+
     user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     hours = models.DecimalField(max_digits=5, decimal_places=2)
@@ -107,6 +116,8 @@ class TimeEntry(models.Model):
     
 
 class TaskDescription(models.Model):
+    """Task description model."""
+
     time_entry = models.ForeignKey(TimeEntry, on_delete=models.CASCADE)
     description = models.TextField()
 
