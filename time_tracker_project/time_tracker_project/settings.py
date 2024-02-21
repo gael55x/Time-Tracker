@@ -27,6 +27,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost',
+    'http://127.0.0.1',
+    'http://0.0.0.0',
+    'http://127.0.0.1:3000',
+    'http://localhost:3000',
+]
+
+CORS_ALLOWED_CREDENTIALS = True
 
 # Application definition
 
@@ -63,14 +72,6 @@ REST_FRAMEWORK = {
     ),
 }
 
-CORS_ORIGIN_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:8000/',
-    'http://localhost:8000/',
-    'http://127.0.0.1:3000/',
-    'http://localhost:3000/',
-]
-
-CORS_ALLOWED_CREDENTIALS = True
 
 ROOT_URLCONF = 'time_tracker_project.urls'
 

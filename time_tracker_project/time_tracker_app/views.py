@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import login, logout
 from .models import Project, TimeEntry, TaskDescription
 from .serializer import ProjectSerializer, TimeEntrySerializer, TaskDescriptionSerializer, UserRegisterSerializer, UserLoginSerializer, UserSerializer
-from .validations import custom_validation, validate_email, validate_password
+from .validations import custom_validation, validate_username, validate_password
 
 class UserRegister(APIView):
     """
@@ -46,7 +46,7 @@ class UserLogin(APIView):
 
     def post(self, request):
         data = request.data
-        assert validate_email(data)
+        assert validate_username(data)
         assert validate_password(data)
         serializer = UserLoginSerializer(data=data)
         if serializer.is_valid(raise_exception=True):

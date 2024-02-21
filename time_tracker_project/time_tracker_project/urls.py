@@ -22,10 +22,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # User authentication
-    path('register', UserRegister.as_view(), name='register'),
-	path('login', UserLogin.as_view(), name='login'),
-	path('logout', UserLogout.as_view(), name='logout'),
-	path('user', UserView.as_view(), name='user'),
+    path('register/', UserRegister.as_view(), name='register'),
+	path('login/', UserLogin.as_view(), name='login'),
+	path('logout/', UserLogout.as_view(), name='logout'),
+	path('user/', UserView.as_view(), name='user'),
 
     # Get all projects or create a new project
     path('projects/', ProjectListAPIView.as_view(), name='project-list'),
