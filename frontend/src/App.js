@@ -16,6 +16,7 @@ const client = axios.create({
   baseURL: "http://127.0.0.1:8000"
 });
 
+
 function App() {
 
   const [currentUser, setCurrentUser] = useState();
@@ -25,7 +26,7 @@ function App() {
   const [password, setPassword] = useState('');
 
   useEffect(() => {
-    client.get("/user")
+    client.get("/user/")
     .then(function(res) {
       setCurrentUser(true);
     })
@@ -47,7 +48,7 @@ function App() {
   function submitRegistration(e) {
     e.preventDefault();
     client.post(
-      "/register",
+      "/register/",
       {
         email: email,
         username: username,
@@ -55,9 +56,10 @@ function App() {
       }
     ).then(function(res) {
       client.post(
-        "/login",
+        "/login/",
         {
           email: email,
+          username: username,
           password: password
         }
       ).then(function(res) {
@@ -69,9 +71,10 @@ function App() {
   function submitLogin(e) {
     e.preventDefault();
     client.post(
-      "/login",
+      "/login/",
       {
         email: email,
+        username: username,
         password: password
       }
     ).then(function(res) {
@@ -82,7 +85,7 @@ function App() {
   function submitLogout(e) {
     e.preventDefault();
     client.post(
-      "/logout",
+      "/logout/",
       {withCredentials: true}
     ).then(function(res) {
       setCurrentUser(false);
@@ -176,5 +179,6 @@ function App() {
     </div>
   );
 }
+
 
 export default App;
