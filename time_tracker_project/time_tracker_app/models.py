@@ -35,6 +35,7 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
     """Custom user model."""
     email = models.EmailField(max_length=50, unique=True)
     username = models.CharField(max_length=50)
+    user_id = models.AutoField(primary_key=True, default=334)  
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     USERNAME_FIELD = 'email'
@@ -63,13 +64,13 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 
 class Project(models.Model):
     """Project model."""
-
+    user = models.ForeignKey(AppUser, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=255)
 
 class TimeEntry(models.Model):
     """Time entry model."""
 
-    user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(AppUser, on_delete=models.CASCADE, db_column='user_id')
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     hours = models.DecimalField(max_digits=5, decimal_places=2)
     description = models.TextField()
@@ -113,6 +114,7 @@ class TimeEntry(models.Model):
             total_hours = sum(entry.hours for entry in entries)
             totals[project.name] = total_hours
         return totals
+
     
 
 class TaskDescription(models.Model):

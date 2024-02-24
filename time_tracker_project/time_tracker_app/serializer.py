@@ -26,7 +26,7 @@ class UserLoginSerializer(serializers.Serializer):
     
     def check_user(self, clean_data):
         """Check if the user exists."""
-        user = authenticate(username=clean_data['username'], password=clean_data['password'])
+        user = authenticate(username=clean_data['username'], email=clean_data['email'], password=clean_data['password'])
         if not user:
             raise AssertionError('user not found')
         return user
@@ -34,16 +34,18 @@ class UserLoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for user details."""
     
+    user_id = serializers.IntegerField(source='id')  # Map id to user_id
+    
     class Meta:
         model = UserModel
-        fields = ('email', 'username')
+        fields = ('user_id', 'email', 'username')
 
 class ProjectSerializer(serializers.ModelSerializer):
     """Serializer for project details."""
     
     class Meta:
         model = Project
-        fields = ['id', 'name']
+        fields = ['id', 'user', 'name']
 
 class TaskDescriptionSerializer(serializers.ModelSerializer):
     """Serializer for task description."""

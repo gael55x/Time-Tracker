@@ -4,7 +4,7 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import login, logout
-from .models import Project, TimeEntry, TaskDescription
+from .models import Project, TimeEntry, TaskDescription, AppUser
 from .serializer import ProjectSerializer, TimeEntrySerializer, TaskDescriptionSerializer, UserRegisterSerializer, UserLoginSerializer, UserSerializer
 from .validations import custom_validation, validate_username, validate_password
 
@@ -89,6 +89,8 @@ class UserView(APIView):
 # Get, update, or delete a specific project
 class ProjectDetailAPIView(APIView):
     """API view for managing a specific project."""
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (SessionAuthentication,)
 
     serializer_class = ProjectSerializer
 
@@ -137,24 +139,21 @@ class ProjectDetailAPIView(APIView):
         project.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-# Get all projects or create a new project
+# Get all projects or create a new project for user
 class ProjectListAPIView(APIView):
     """API view for managing all projects."""
-
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (SessionAuthentication,)
+    
     serializer_class = ProjectSerializer
 
     def get(self, request):
-        """Retrieve a list of all projects.
-        
-        Args:
-            request: HTTP request object.
-
-        Returns:
-            Response: HTTP response object containing a list of projects.
-        """
-        projects = Project.objects.all()
+        """Retrieve a list of projects for the authenticated user."""
+        user_id = request.user.id
+        projects = Project.objects.filter(user_id=user_id)
         output = [{"id": project.id, "name": project.name} for project in projects]
         return Response(output)
+
 
     def post(self, request):
         """Create a new project.
@@ -205,6 +204,53 @@ class TimeEntryListAPIView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ProjectUsersAPIView(APIView):
+    """
+    API view for managing users associated with a project.
+
+    GET: Retrieve all users associated with the project.
+    POST: Tag a user to the project.
+    """
+
+    def get(self, request, pk):
+        """
+        Retrieve all users associated with the project.
+
+        Args:
+            request: HTTP request object.
+            pk: Primary key of the project.
+
+        Returns:
+            Response containing user data.
+        """
+        project = Project.objects.get(pk=pk)
+        users = project.users.all()
+        user_data = [{"id": user.id, "username": user.username} for user in users]
+        return Response(user_data)
+
+    def post(self, request, pk):
+        """
+        Tag a user to the project.
+
+        Args:
+            request: HTTP request object.
+            pk: Primary key of the project.
+
+        Returns:
+            Response indicating success or failure.
+        """
+        project = Project.objects.get(pk=pk)
+        user_id = request.data.get('user_id')
+        if user_id:
+            try:
+                user = AppUser.objects.get(pk=user_id)
+                project.users.add(user)
+                return Response({"message": "User tagged successfully"}, status=status.HTTP_201_CREATED)
+            except AppUser.DoesNotExist:
+                return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"message": "User ID not provided"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 
