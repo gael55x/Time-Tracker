@@ -64,8 +64,11 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 
 class Project(models.Model):
     """Project model."""
-    user = models.ForeignKey(AppUser, on_delete=models.CASCADE, null=True)
+    user_id = models.IntegerField(primary_key=True) 
     name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
 
 class TimeEntry(models.Model):
     """Time entry model."""
@@ -116,7 +119,6 @@ class TimeEntry(models.Model):
         return totals
 
     
-
 class TaskDescription(models.Model):
     """Task description model."""
 

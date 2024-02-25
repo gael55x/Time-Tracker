@@ -1,10 +1,19 @@
 from django.contrib import admin
-from .models import Project, TimeEntry, TaskDescription
-
+from .models import Project, TimeEntry, TaskDescription, AppUser
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
+    """Custom admin for Project model."""
+    list_display = ('get_username', 'name')
+    fields = ('user', 'name')
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.order_by('user')
+
+    def get_username(self, obj):
+        return obj.user.username if obj.user else None
+    get_username.short_description = 'User'
 
 @admin.register(TimeEntry)
 class TimeEntryAdmin(admin.ModelAdmin):
@@ -18,3 +27,4 @@ class TaskDescriptionAdmin(admin.ModelAdmin):
     list_filter = ('time_entry',)
     search_fields = ('time_entry__user__username', 'time_entry__project__name', 'description')
 
+admin.site.register(AppUser)

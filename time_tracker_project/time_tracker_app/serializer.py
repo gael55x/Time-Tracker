@@ -45,7 +45,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Project
-        fields = ['id', 'user', 'name']
+        fields = ['id', 'user_id', 'name']
 
 class TaskDescriptionSerializer(serializers.ModelSerializer):
     """Serializer for task description."""

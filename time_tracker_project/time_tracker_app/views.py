@@ -7,6 +7,7 @@ from django.contrib.auth import login, logout
 from .models import Project, TimeEntry, TaskDescription, AppUser
 from .serializer import ProjectSerializer, TimeEntrySerializer, TaskDescriptionSerializer, UserRegisterSerializer, UserLoginSerializer, UserSerializer
 from .validations import custom_validation, validate_username, validate_password
+from django.shortcuts import get_object_or_404
 
 class UserRegister(APIView):
     """
@@ -149,7 +150,7 @@ class ProjectListAPIView(APIView):
 
     def get(self, request):
         """Retrieve a list of projects for the authenticated user."""
-        user_id = request.user.id
+        user_id = request.user.user_id
         projects = Project.objects.filter(user_id=user_id)
         output = [{"id": project.id, "name": project.name} for project in projects]
         return Response(output)
@@ -166,6 +167,8 @@ class ProjectListAPIView(APIView):
         """
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
+            user_id = request.user.user_id
+            serializer.validated_data['user_id'] = user_id
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
